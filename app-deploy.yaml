@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tetris-game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tetris-game
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: tetris-game
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: tetris-game
+        image: mylabacr23.azurecr.io/tetris-game-app:tag
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tetris-game
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: tetris-game
+
